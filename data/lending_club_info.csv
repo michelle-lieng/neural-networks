@@ -15,7 +15,7 @@ loan_status,Current status of the loan
 purpose,A category provided by the borrower for the loan request. 
 title,The loan title provided by the borrower
 zip_code,The first 3 numbers of the zip code provided by the borrower in the loan application.
-addr_state,The state provided by the borrower in the loan application
+address,The address provided by the borrower in the loan application
 dti,"A ratio calculated using the borrower’s total monthly debt payments on the total debt obligations, excluding mortgage and the requested LC loan, divided by the borrower’s self-reported monthly income."
 earliest_cr_line,The month the borrower's earliest reported credit line was opened
 open_acc,The number of open credit lines in the borrower's credit file.

@@ -106,8 +106,8 @@ There are many LendingClub data sets on Kaggle. Here is the information on this 
     </tr>
     <tr>
       <th>16</th>
-      <td>addr_state</td>
-      <td>The state provided by the borrower in the loan application</td>
+      <td>address</td>
+      <td>The address provided by the borrower in the loan application</td>
     </tr>
     <tr>
       <th>17</th>
