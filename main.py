@@ -1,10 +1,10 @@
-# INSTALL PACKAGES ---------------------------------------------------------------------------------
+# INSTALL PACKAGES ------------------------------------------------------------------------------------
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# MAKE A FUNCTION FOR THE DESCRIPTIONS -------------------------------------------------------------
+# MAKE A FUNCTION FOR THE DESCRIPTIONS ----------------------------------------------------------------
 club_info = pd.read_csv("./data/lending_club_info.csv")
 
 def feat_info(col_name):
@@ -319,4 +319,96 @@ Possible changes to improve my dataset that I can implement later:
 - remove installment which has 95% correlation with loan_amnt
 - remove high outliers in annual_inc, revol_bal, dti
 - could change pub_rec to yes or no or at least put into bins or remove outliers
+"""
+
+# SPLIT THE DATA -------------------------------------------------------------------------------------
+df=pd.read_csv("./data/cleaned_data.csv")
+df["loan_repaid"].value_counts()
+from sklearn.model_selection import train_test_split
+
+# change df into np
+y=df["loan_repaid"].values
+X=df.drop("loan_repaid", axis=1).values
+
+X_train, X_test, y_train, y_test = train_test_split(X,y,random_state=101, test_size=0.2)
+
+# NORMALISE THE DATA ---------------------------------------------------------------------------------
+from sklearn.preprocessing import MinMaxScaler
+
+scaler = MinMaxScaler()
+
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+# TRAIN THE MODEL ------------------------------------------------------------------------------------
+# import tensorflow modules
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Dropout
+from tensorflow.keras.callbacks import EarlyStopping
+
+X_train.shape
+# has 78 features
+
+model = Sequential()
+
+# imput layer
+model.add(Dense(units = 78, activation="relu"))
+model.add(Dropout(0.2))
+
+# hidden layers -> half neurons each time
+model.add(Dense(units=39, activation="relu"))
+model.add(Dropout(0.2))
+
+model.add(Dense(units=19, activation="relu"))
+model.add(Dropout(0.2))
+
+# output layer
+# this is a binary classification so we use sigmoid as our activation
+model.add(Dense(units=1, activation="sigmoid"))
+
+# since binary classification use binary crossentropy as our loss
+model.compile(loss="binary_crossentropy", optimizer="adam")
+
+# implement earlystopping - prefits overfitting 
+early_stop = EarlyStopping(monitor="val_loss",
+                           mode="min",
+                           verbose=1,
+                           patience=10)
+
+# fit the model including validation data so we can view later if our model is not overfitting
+# add batch size and epochs to increase model accuracy
+model.fit(x=X_train,
+          y=y_train,
+          batch_size=256,
+          epochs=100,
+          validation_data=(X_test, y_test),
+          verbose=1,
+          callbacks=[early_stop])
+
+# EVALUATE THE MODEL ---------------------------------------------------------------------------------
+# graphically - we can see that the val_loss doesn't go up as loss goes down which is good!
+loss = pd.DataFrame(model.history.history)
+sns.lineplot(data=loss)
+plt.show()
+
+X_test.shape
+# get predictions - binary classification threshold 50
+predictions = (model.predict(X_test) > 0.5).astype("int32") 
+
+# metrics
+from sklearn.metrics import confusion_matrix, classification_report
+print(confusion_matrix(y_test, predictions))
+print(classification_report(y_test, predictions))
+
+df["loan_repaid"].value_counts()/len(df)
+
+"""
+Evaluation on the metrics:
+--------------------------
+As we have an imbalanced dataset with 80% of our data being fully paid back, that means if we 
+built a simple model and just guessed fully paid then we would get 80% accuracy. Hence, 86% accuracy
+is better than that but not that good since our model is imbalanced. 
+
+Looking at our charged back class we can see that the recall is very bad and the f1-score also 
+isn't that great so I'm going to focus on improving that. 
 """
