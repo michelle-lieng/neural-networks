@@ -304,7 +304,7 @@ df.isnull().sum()
 df.corr()["loan_repaid"].sort_values()
 
 # save cleaned data to a csv
-df.to_csv('./data/cleaned_data.csv', index=False)
+# df.to_csv('./data/cleaned_data.csv', index=False)
 
 """
 Notes from cleaning my dataset:
@@ -322,7 +322,11 @@ Possible changes to improve my dataset that I can implement later:
 """
 
 # SPLIT THE DATA -------------------------------------------------------------------------------------
-df=pd.read_csv("./data/cleaned_data.csv")
+# df=pd.read_csv("./data/cleaned_data.csv")
+
+# train sample of the data
+# df=df.sample(fraction=0.1, random_state=101)
+
 df["loan_repaid"].value_counts()
 from sklearn.model_selection import train_test_split
 
@@ -353,14 +357,14 @@ model = Sequential()
 
 # imput layer
 model.add(Dense(units = 78, activation="relu"))
-model.add(Dropout(0.2))
+model.add(Dropout(0.5))
 
 # hidden layers -> half neurons each time
-model.add(Dense(units=39, activation="relu"))
-model.add(Dropout(0.2))
+model.add(Dense(units=35, activation="relu"))
+model.add(Dropout(0.5))
 
 model.add(Dense(units=19, activation="relu"))
-model.add(Dropout(0.2))
+model.add(Dropout(0.5))
 
 # output layer
 # this is a binary classification so we use sigmoid as our activation
@@ -393,7 +397,7 @@ plt.show()
 
 X_test.shape
 # get predictions - binary classification threshold 50
-predictions = (model.predict(X_test) > 0.5).astype("int32") 
+predictions = (model.predict(X_test) > 0.5).astype("int32")
 
 # metrics
 from sklearn.metrics import confusion_matrix, classification_report
